@@ -7,3 +7,10 @@ export const User=createParamDecorator((data,context:ExecutionContext)=>{
     }
     return request?.user            
 })
+
+export interface UserInfo {
+    name: string;
+    id: number;
+    iat: number;
+    exp: number;
+  }

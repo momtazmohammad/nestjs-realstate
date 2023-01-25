@@ -5,13 +5,17 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { HomeModule } from './home/home.module';
 import { UserInterceptor } from './user/interceptors/user.interceptor';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD,APP_INTERCEPTOR } from '@nestjs/core';
+import { AuthGuard } from './guards/auth.guard';
 
 @Module({
   imports: [UserModule, PrismaModule, HomeModule],
   controllers: [AppController],
   providers: [AppService,{
   provide:APP_INTERCEPTOR,
-  useClass: UserInterceptor}],
+  useClass: UserInterceptor},
+// {provide:APP_GUARD, //use for applay gard globally
+// useClass:AuthGuard}
+]
 })
 export class AppModule {}

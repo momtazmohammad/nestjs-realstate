@@ -1,4 +1,4 @@
-import { Controller, Get,UseGuards } from '@nestjs/common';
+import { Controller, Get,UseGuards,Patch } from '@nestjs/common';
 import { Delete, Post, Put } from '@nestjs/common/decorators/http/request-mapping.decorator';
 import { Body, Param, Query } from '@nestjs/common/decorators/http/route-params.decorator';
 import {  UnauthorizedException } from '@nestjs/common/exceptions';
@@ -7,7 +7,7 @@ import { PropertyType, UserType } from '@prisma/client';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/user/decorators/user.decorator';
-import { CreateHomeDto, HomeResponseDto, UpdateHomeDto } from './dtos/home.dto';
+import { CreateHomeDto, HomeResponseDto, InquireDto, UpdateHomeDto } from './dtos/home.dto';
 import { HomeService } from './home.service';
 
 @Controller('home')
@@ -19,7 +19,7 @@ export class HomeController {
         @Query("minPrice") minPrice?:string,
         @Query("maxPrice") maxPrice?:string,
         @Query("propertyType") propertyType?:PropertyType
-    ):Promise<HomeResponseDto[]> {
+    ):Promise<HomeResponseDto[]> {        
         const price=minPrice || maxPrice ?{
             ...(minPrice && {gte:+minPrice}),
             ...(maxPrice && {lte:+maxPrice})
@@ -35,15 +35,19 @@ export class HomeController {
     getHome(@Param("id") id:number){
         return this.homeService.getHome(id)
     }
-    @Roles(UserType.REALTOR,UserType.ADMIN)
+
+    @Roles(UserType.REALTOR)
     @UseGuards(AuthGuard)
     @Post()
     createHome(
         @Body() body:CreateHomeDto,
         @User() user        
-    ){     return "createdhome   "
-         //return this.homeService.createHome(body,user.id)
+    ){
+         return this.homeService.createHome(body,user.id)
     }
+
+    @Roles(UserType.REALTOR)
+    @UseGuards(AuthGuard)
     @Put(":id")
     async updateHome(
         @Param("id",ParseIntPipe) id:number,
@@ -56,6 +60,9 @@ export class HomeController {
         }
         return this.homeService.updateHome(id,body)
     }
+    
+    @Roles(UserType.REALTOR)
+    @UseGuards(AuthGuard)
     @Delete(":id")
     async deleteHome(
         @Param("id",ParseIntPipe) id:number,        
@@ -68,4 +75,33 @@ export class HomeController {
         }
         return this.homeService.deleteHome(id)
     }
+
+    @Roles(UserType.BUYER)
+    @Post("/inquire/:id")
+    inquire(
+        @Param("id" ,ParseIntPipe) homeId:number,
+        @User() user,
+        @Body() {message}:InquireDto
+    ){
+        return this.homeService.inquire(user,homeId,message)
+    }
+
+    //@Roles(UserType.REALTOR)    
+    @Get('/:id/messages')
+    async getHomeMessages(
+        @Param(":id",ParseIntPipe) homeId:number,
+      //  @User() user
+    ){
+        return "{homeId}"
+        // console.log({user,homeId})
+        // const realtor=await this.homeService.getRealtorByHomeId(homeId)
+        // console.log({realtor,homeId})
+        // if(realtor.id!==user.id){
+        //     throw new UnauthorizedException()
+        // }
+        // return this.homeService.homeMessages(homeId)
+
+    }
+
+    
 }
