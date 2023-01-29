@@ -1,5 +1,6 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,6 +15,11 @@ async function bootstrap() {
       // forbidUnknownValues: false
     })
   )
+  app.use(cookieParser())
+  // app.enableCors({
+  //   origin:"http://localhost:clientapp_port",
+  //   credentials:true // so we dont need passtrough param in every request
+  // })
   await app.listen(3000);
 }
 bootstrap();

@@ -20,7 +20,9 @@ async    canActivate(context:ExecutionContext){
         ])
         if(roles?.length){
             const request=context.switchToHttp().getRequest();
-            const token=request.headers?.authtoken
+            const token=request?.cookies['jwt']            
+            //const token=request.headers?.authtoken
+            if(!token) return false
             try{
             const payload=await jwt.verify(token,process.env.JSON_SECRET_KEY) as Payload
             const user=await this.prismaService.user.findUnique({

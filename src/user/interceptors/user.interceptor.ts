@@ -6,7 +6,8 @@ export class UserInterceptor implements NestInterceptor{
         context:ExecutionContext,handler:CallHandler
     ){
         const request=context.switchToHttp().getRequest();
-        const token=request?.headers?.authtoken
+        const token=request?.cookies['jwt']            
+        //const token=request?.headers?.authtoken
         if(token){
             const user=await jwt.decode(token)
             request.user=user

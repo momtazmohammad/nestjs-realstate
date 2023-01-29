@@ -2,6 +2,7 @@ import { Controller, Get,UseGuards,Patch ,Param,Delete, Post, Put,Body,  Query} 
 import {  UnauthorizedException } from '@nestjs/common/exceptions';
 import { ParseIntPipe } from '@nestjs/common/pipes';
 import { PropertyType, UserType } from '@prisma/client';
+//import { Request } from 'express';
 import { Roles } from 'src/decorators/roles.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { User } from 'src/user/decorators/user.decorator';
@@ -26,12 +27,17 @@ export class HomeController {
             ...(city && {city}),
             ...(price && {price}),
             ...(propertyType && {property_type:propertyType})
-        }
+        }        
+
         return this.homeService.getHomes(filter)
     }
     
     @Get(":id")
-    getHome(@Param("id") id:number){
+    getHome(@Param("id") id:number,
+    //@Req() req:Request
+    ){
+        //const cookies = req.cookies;
+        //if (!cookies?.jwt) {console.log({ msg: "not signe in yet" })} else {console.log(cookies.jwt)}; //No content
         return this.homeService.getHome(id)
     }
 
