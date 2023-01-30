@@ -9,7 +9,7 @@ import {APP_INTERCEPTOR} from "@nestjs/core"
   controllers: [HomeController],
   providers: [HomeService,{
     provide:APP_INTERCEPTOR,
-    useClass: ClassSerializerInterceptor
+    useClass: ClassSerializerInterceptor //change the reponse base on Dto
   }]
 })
 export class HomeModule {}

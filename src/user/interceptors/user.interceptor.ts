@@ -12,6 +12,18 @@ export class UserInterceptor implements NestInterceptor{
             const user=await jwt.decode(token)
             request.user=user
         }
-        return handler.handle()
+        return handler.handle() //we can change the response
+        /*
+        return handler.handle().pipe(
+            map((data)=>{
+                const reponse={
+                    ...data,
+                    createdAt:data.created_at
+                }
+                delete response.created_at
+                return response
+            }
+        )
+        */
     }
 }
