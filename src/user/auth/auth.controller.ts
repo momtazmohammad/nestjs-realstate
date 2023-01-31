@@ -1,4 +1,4 @@
-import { Controller, Post,Body, Param, ParseEnumPipe, Get, Res } from '@nestjs/common';
+import { Controller, Post,Body, Param, ParseEnumPipe, Get, Res, UseInterceptors } from '@nestjs/common';
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { UserType } from '@prisma/client';
 import { GenerateProductKeyDto, SigninDto, SignupDto } from '../dtos/auth.dto';
@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import * as bcrypt from "bcryptjs"
 import { User } from '../decorators/user.decorator';
 import { Response } from 'express';
+//import { UserInterceptor } from '../interceptors/user.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -39,6 +40,14 @@ export class AuthController {
     generateProductKey(@Body() {email,userType}:GenerateProductKeyDto){
         return this.authService.generateProductKey(email,userType)
     }
+    @Post('logout')
+       logout(
+        @Res({passthrough:true}) res:Response
+    ){
+        res.clearCookie("jwt")
+        return {message:"Success"}
+    }
+    //@UseInterceptors(UserInterceptor)
     @Get("/me")
     me(@User() user)
     {
